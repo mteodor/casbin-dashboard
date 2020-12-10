@@ -84,7 +84,10 @@ func (c *ApiController) AuthGithub() {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		response, err := http.Get("https://api.github.com/user/emails?access_token=" + token.AccessToken)
+		req, _ := http.NewRequest(http.MethodGet, "https://api.github.com/user/emails", nil)
+		req.Header.Set("Authorization", "token "+token.AccessToken)
+		response, err := http.DefaultClient.Do(req)
+
 		if err != nil {
 			res.IsAuthenticated = false
 			beego.Error(err)
@@ -106,7 +109,10 @@ func (c *ApiController) AuthGithub() {
 	}()
 	go func() {
 		defer wg.Done()
-		response2, err := http.Get("https://api.github.com/user?access_token=" + token.AccessToken)
+		req, _ := http.NewRequest(http.MethodGet, "https://api.github.com/user", nil)
+		req.Header.Set("Authorization", "token "+token.AccessToken)
+		response2, err := http.DefaultClient.Do(req)
+
 		if err != nil {
 			res.IsAuthenticated = false
 			beego.Error("Unexpected error while processing get account", err)
